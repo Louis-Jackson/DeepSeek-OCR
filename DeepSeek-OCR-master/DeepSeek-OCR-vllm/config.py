@@ -17,11 +17,18 @@ SKIP_REPEAT = True
 MODEL_PATH = 'deepseek-ai/DeepSeek-OCR' # change to your model path
 
 # TODO: change INPUT_PATH
-# .pdf: run_dpsk_ocr_pdf.py; 
-# .jpg, .png, .jpeg: run_dpsk_ocr_image.py; 
-# Omnidocbench images path: run_dpsk_ocr_eval_batch.py
+# Single file mode:
+#   .pdf: run_dpsk_ocr_pdf.py
+#   .jpg, .png, .jpeg: run_dpsk_ocr_image.py
+#   Omnidocbench images path: run_dpsk_ocr_eval_batch.py
+#
+# Folder mode (NEW):
+#   Folder path: run_dpsk_ocr_folder.py
+#   - Processes all images (.jpg, .jpeg, .png, .bmp, .tiff, .webp) and PDFs in the folder
+#   - Automatically deletes processed files after completion
+#   - Saves results to OUTPUT_PATH
 
-INPUT_PATH = '' 
+INPUT_PATH = ''  # For folder mode: set to folder path; For single file mode: set to file path
 OUTPUT_PATH = ''
 
 PROMPT = '<image>\n<|grounding|>Convert the document to markdown.'
