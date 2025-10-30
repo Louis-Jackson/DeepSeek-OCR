@@ -43,10 +43,11 @@ The codebase supports two inference approaches:
 1. **vLLM Backend** (`DeepSeek-OCR-master/DeepSeek-OCR-vllm/`):
    - High-performance batch inference with concurrency support
    - Custom vLLM model implementation in `deepseek_ocr.py`
-   - Three main scripts:
+   - Four main scripts:
      - `run_dpsk_ocr_image.py` - Single image streaming inference
      - `run_dpsk_ocr_pdf.py` - PDF processing with ~2500 tokens/s on A100-40G
      - `run_dpsk_ocr_eval_batch.py` - Batch evaluation for benchmarks
+     - `run_dpsk_ocr_folder.py` - Folder batch processing (NEW) - processes all images/PDFs in a folder
 
 2. **Transformers Backend** (`DeepSeek-OCR-master/DeepSeek-OCR-hf/`):
    - Standard HuggingFace transformers interface
@@ -96,13 +97,25 @@ Configured via `BASE_SIZE`, `IMAGE_SIZE`, and `CROP_MODE` in `config.py`:
 
 ### Configuration
 
-All runs require editing `DeepSeek-OCR-master/DeepSeek-OCR-vllm/config.py`:
+Configuration can be set in three ways (priority: command line > environment variables > config.py):
 
+**Method 1: Edit config.py**
 ```python
 MODEL_PATH = 'deepseek-ai/DeepSeek-OCR'  # or local path
-INPUT_PATH = ''   # Set input file/directory path
-OUTPUT_PATH = ''  # Set output directory path
+_DEFAULT_INPUT_PATH = ''   # Set input file/directory path
+_DEFAULT_OUTPUT_PATH = ''  # Set output directory path
 PROMPT = '<image>\n<|grounding|>Convert the document to markdown.'  # Choose prompt
+```
+
+**Method 2: Environment variables**
+```bash
+export DEEPSEEK_OCR_INPUT_PATH=/path/to/input
+export DEEPSEEK_OCR_OUTPUT_PATH=/path/to/output
+```
+
+**Method 3: Command line arguments** (for folder processing only)
+```bash
+python run_dpsk_ocr_folder.py --input /path/to/input --output /path/to/output
 ```
 
 ### vLLM Inference
@@ -118,7 +131,25 @@ python run_dpsk_ocr_pdf.py
 
 # Batch evaluation for benchmarks
 python run_dpsk_ocr_eval_batch.py
+
+# Folder batch processing (NEW)
+# Processes all images and PDFs in a folder, then deletes source files
+python run_dpsk_ocr_folder.py
+
+# Folder processing without deleting source files
+python run_dpsk_ocr_folder.py --no-delete
+
+# Folder processing with command line arguments
+python run_dpsk_ocr_folder.py --input /data/docs --output /data/results --no-delete
 ```
+
+**Folder Processing Features:**
+- Automatically detects and processes all images (.jpg, .jpeg, .png, .bmp, .tiff, .webp) and PDFs
+- Routes each file to the appropriate script (image or PDF processor)
+- Uses environment variables to pass paths (no file modification required)
+- Deletes source files after successful processing (unless `--no-delete` is specified)
+- Provides detailed progress reporting and error handling
+- Supports three configuration methods: config.py defaults, environment variables, or command line arguments
 
 **Key vLLM Parameters:**
 - `MAX_CONCURRENCY` - Number of concurrent requests (default: 100)

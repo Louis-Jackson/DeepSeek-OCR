@@ -16,7 +16,6 @@ PRINT_NUM_VIS_TOKENS = False
 SKIP_REPEAT = True
 MODEL_PATH = 'deepseek-ai/DeepSeek-OCR' # change to your model path
 
-# TODO: change INPUT_PATH
 # Single file mode:
 #   .pdf: run_dpsk_ocr_pdf.py
 #   .jpg, .png, .jpeg: run_dpsk_ocr_image.py
@@ -27,9 +26,19 @@ MODEL_PATH = 'deepseek-ai/DeepSeek-OCR' # change to your model path
 #   - Processes all images (.jpg, .jpeg, .png, .bmp, .tiff, .webp) and PDFs in the folder
 #   - Automatically deletes processed files after completion
 #   - Saves results to OUTPUT_PATH
+#
+# Can also be set via environment variables:
+#   export DEEPSEEK_OCR_INPUT_PATH=/path/to/input
+#   export DEEPSEEK_OCR_OUTPUT_PATH=/path/to/output
 
-INPUT_PATH = ''  # For folder mode: set to folder path; For single file mode: set to file path
-OUTPUT_PATH = ''
+import os as _os
+
+_DEFAULT_INPUT_PATH = 'input-folder'  # Default input path
+_DEFAULT_OUTPUT_PATH = 'output-folder'  # Default output path
+
+# Read from environment variables, fallback to defaults
+INPUT_PATH = _os.getenv('DEEPSEEK_OCR_INPUT_PATH', _DEFAULT_INPUT_PATH)
+OUTPUT_PATH = _os.getenv('DEEPSEEK_OCR_OUTPUT_PATH', _DEFAULT_OUTPUT_PATH)
 
 PROMPT = '<image>\n<|grounding|>Convert the document to markdown.'
 # PROMPT = '<image>\nFree OCR.'
