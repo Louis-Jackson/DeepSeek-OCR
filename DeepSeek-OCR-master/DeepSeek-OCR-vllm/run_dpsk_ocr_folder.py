@@ -184,7 +184,6 @@ def process_folder(input_path, output_path, delete_files=True):
 
     # Create output directory
     os.makedirs(output_path, exist_ok=True)
-    os.makedirs(f'{output_path}/images', exist_ok=True)
 
     # Supported file types
     image_extensions = ['*.jpg', '*.jpeg', '*.png', '*.bmp', '*.tiff', '*.webp',
@@ -228,11 +227,17 @@ def process_folder(input_path, output_path, delete_files=True):
             file_name = Path(image_path).name
             print(f'{Colors.CYAN}[{idx}/{len(image_files)}]{Colors.RESET} {file_name}')
 
+            # Create a unique output subdirectory for this file
+            file_name_without_ext = Path(image_path).stem
+            file_output_path = os.path.join(output_path, file_name_without_ext)
+            os.makedirs(file_output_path, exist_ok=True)
+            os.makedirs(f'{file_output_path}/images', exist_ok=True)
+
             # Run image processing script with environment variables
             success, output = run_script_with_env(
                 'run_dpsk_ocr_image.py',
                 image_path,
-                output_path,
+                file_output_path,
                 'image'
             )
 
@@ -255,11 +260,17 @@ def process_folder(input_path, output_path, delete_files=True):
             file_name = Path(pdf_path).name
             print(f'{Colors.CYAN}[{idx}/{len(pdf_files)}]{Colors.RESET} {file_name}')
 
+            # Create a unique output subdirectory for this file
+            file_name_without_ext = Path(pdf_path).stem
+            file_output_path = os.path.join(output_path, file_name_without_ext)
+            os.makedirs(file_output_path, exist_ok=True)
+            os.makedirs(f'{file_output_path}/images', exist_ok=True)
+
             # Run PDF processing script with environment variables
             success, output = run_script_with_env(
                 'run_dpsk_ocr_pdf.py',
                 pdf_path,
-                output_path,
+                file_output_path,
                 'pdf'
             )
 
